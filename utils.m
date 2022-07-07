@@ -90,7 +90,7 @@ classdef utils
                 % Print the Features of the system
                 STEP = stepinfo(closeLoopSys);
                 utils.PRINT_SYSTEM_FEATURES(STEP, stepError, rampError, pertubationError,...
-                    u_min, u_max, u_inf, Gm, Pm,strTitle, STEP_pertubation);
+                    u_min, u_max, u_inf, Gm, Pm,strTitle, STEP_pertubation, bandwidth(closeLoopSys, -3));
                 margin(DzGz);
                 %title(strcat('Close Loop Bode Diagram -- ', strTitle));
                 
@@ -101,7 +101,9 @@ classdef utils
         end
         
         function PRINT_SYSTEM_FEATURES(STEP_INFO, stepError, rampError, pertubationError,...
-                u_min, u_max, u_inf, Gm, Pm, strTitle, STEP_pertubation)
+                u_min, u_max, u_inf, Gm, Pm, strTitle, STEP_pertubation, bw)
+            
+            fprintf("---- %s ----\n", strTitle);
             fprintf("Rise Time: %f s\n", STEP_INFO.RiseTime);
             % fprintf("Transient Time: %s\n", STEP_INFO.TransientTime);
             fprintf("Settling Time: %f s\n", STEP_INFO.SettlingTime);
@@ -129,7 +131,7 @@ classdef utils
                 fprintf(fileID,"%f %%\n", STEP_INFO.Overshoot); %Overshoot: 
                 fprintf(fileID,"%f dB\n", 20*log10(Gm));
                 fprintf(fileID,"%f º\n", Pm);
-                fprintf(fileID, "%f rad\n", 0.0); % banda de passagem MF
+                fprintf(fileID, "%f rad/s \n", bw); % banda de passagem MF em -3db
                 fprintf(fileID, "%f\n", pertubationError); % Steady state error for pertubation
                 fprintf(fileID, "%f s\n", STEP_pertubation.SettlingTime); %SettlingTime for pertubation
                 fprintf(fileID,"%f ; %f\n", u_min, u_max);

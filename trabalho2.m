@@ -21,6 +21,7 @@
     % Calculo da frequencia de amostragem do sistema
         omega_n = sqrt(0.774);
         zeta = 0.29;
+        wres = sqrt(1-2*zeta*zeta);
         Ts = 1 / (10 * zeta * omega_n); 
         z = tf('z');
         
@@ -29,7 +30,7 @@
         Ky = 0.999157303; % Ky = G(1)
         
         % Erro em estado estacionario
-        choosen_steady_state_error = 0.1;
+        choosen_steady_state_error = 0.01;
         a0 = (1-choosen_steady_state_error)/(Ky*choosen_steady_state_error);
            
     % Planta do sistema discretizada e sem atraso
@@ -46,7 +47,7 @@
         %stepError=abs(SP - y(end))*100; %get the steady state error of step
         %utils.PRINT_SYSTEM_FEATURES(stepinfo(G_MF_Z), stepError, 1);
         
-        utils.plotSystemPerfomances(G_MF_Z, 2, Ts, 1, 'Plant')
+        utils.plotSystemPerfomances(Gz, 1, Ts, 1, 'Plant')
         
     %% 4- Root Locus
     close all;
@@ -80,13 +81,13 @@
         %margin(Dz)
         
     % C4 - Phase Lag Compensator - Usado
-        Dz1=controllers.PhaseLagCompensator(Gz, Ts, 1.10, a0);
+        Dz1=controllers.PhaseLagCompensator(Gz, Ts, 1.12, a0);
         utils.plotSystemPerfomances(Gz, Dz1, Ts, 13, 'C4 - Phase Lag Compensator')
     
     %% C5 - Controlador PI
     close all;
 
-        PI_controller = controllers.doPIController(Gz, Ts, 1.19, 23);
+        PI_controller = controllers.doPIController(Gz, Ts, 1.09, 27);
         utils.plotSystemPerfomances(Gz, PI_controller, Ts, 23, 'C5 - Controlador PI')
     
     %% C extra - Controlador PD
@@ -94,10 +95,10 @@
 
      %   PD_controller = controllers.doPIController(Gz, Ts, 1.40, 2);
       %  utils.plotSystemPerfomances(Gz, PD_controller, Ts, 23, 'Controlador PD')
-    %% C6 - Controlador PID
+    %% C6 - Controlador PID - Obtido por sintonia 
     close all;
         
-        PID_controller = controllers.doPID(Gz, Ts, 1.2, 72);
+        PID_controller = controllers.doPID(Gz, Ts, 1.11, 72);
         utils.plotSystemPerfomances(Gz, PID_controller, Ts, 23, 'C6 - Controlador PID')
       
     %% C7 - Controlador PID - sintonia automatica
@@ -108,6 +109,7 @@
     
     %% Sintese direta 1
     % Dead Beat
+    close all;
         DEAD_BEAT_CONTROLLER = controllers.doDeadBeat(Gz, Ts);
         utils.plotSystemPerfomances(Gz, DEAD_BEAT_CONTROLLER, Ts, 33, 'C8 - Controlador Dead Beat')
     
